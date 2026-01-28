@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГДЗ UA</title>
+    <title>ГДЗ UA | Мобильная версия</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-         :root {
+        :root {
             --bg: #1a1a1b;
             --panel: #272729;
             --accent: #0078d4;
             --text: #e8eaed;
         }
-        
+
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
@@ -21,8 +21,30 @@
             color: var(--text);
             display: flex;
             height: 100vh;
+            overflow: hidden; /* Важно для мобилок */
         }
-        
+
+        /* Шапка для мобильных (скрыта на ПК) */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: var(--panel);
+            z-index: 1000;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .burger-btn {
+            background: none; border: 2px solid var(--accent);
+            color: var(--accent); padding: 5px 10px; border-radius: 5px;
+            cursor: pointer; font-weight: bold;
+        }
+
+        /* Боковая панель */
         aside {
             width: 300px;
             background: var(--panel);
@@ -30,8 +52,10 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+            z-index: 2000;
         }
-        
+
         .logo {
             padding: 20px;
             font-size: 1.5rem;
@@ -39,134 +63,103 @@
             color: var(--accent);
             border-bottom: 1px solid #3e3e42;
         }
-        
-        .menu-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        
-        .grade-section {
-            margin-bottom: 10px;
-        }
-        
+
+        .menu-scroll { flex: 1; overflow-y: auto; padding: 10px; }
+        .grade-section { margin-bottom: 10px; }
         .grade-title {
-            width: 100%;
-            padding: 12px;
-            background: #333;
-            border: none;
-            color: white;
-            text-align: left;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
+            width: 100%; padding: 12px; background: #333; border: none;
+            color: white; text-align: left; cursor: pointer; font-weight: bold; border-radius: 5px;
         }
-        
-        .type-group {
-            display: none;
-            padding-left: 10px;
-            margin-top: 5px;
-        }
-        
-        .type-title {
-            padding: 5px 10px;
-            font-size: 12px;
-            color: #888;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-        
-        .book-item {
-            padding: 8px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        
-        .book-item:hover {
-            background: var(--accent);
-            color: white;
-        }
+
+        .type-group { display: none; padding-left: 10px; margin-top: 5px; }
+        .type-title { padding: 5px 10px; font-size: 11px; color: #888; text-transform: uppercase; margin-top: 10px; }
+        .book-item { padding: 10px 15px; font-size: 14px; cursor: pointer; border-radius: 4px; transition: 0.2s; border-bottom: 1px solid #333; }
+        .book-item:hover { background: var(--accent); color: white; }
+
         /* Основная часть */
-        
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
+        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+        .ad-top { min-height: 90px; background: #111; display: flex; justify-content: center; align-items: center; }
+
+        .content-area { padding: 15px; }
+        .frame-wrapper { width: 100%; max-width: 1000px; margin: 0 auto; }
+
+        footer { padding: 20px; text-align: center; font-size: 12px; opacity: 0.5; }
+        footer a { color: white; text-decoration: none; margin: 0 10px; }
+
+        /* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            
+            .mobile-header { display: flex; }
+            
+            aside {
+                position: fixed;
+                left: 0; top: 0; bottom: 0;
+                transform: translateX(-100%); /* Скрываем меню */
+            }
+
+            aside.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+
+            main { padding-top: 60px; } /* Место под шапку */
+
+            .content-area { padding: 5px; }
+            
+            h1 { font-size: 1.2rem; }
+            
+            /* Делаем iframe выше на мобилках */
+            #iframe-container { padding-top: 150% !important; } 
         }
-        
-        .ad-top {
-            height: 90px;
-            background: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .content-area {
-            padding: 20px;
-        }
-        
-        .frame-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        footer {
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            opacity: 0.5;
-        }
-        
-        footer a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
+
+        /* Затемнение при открытом меню */
+        .overlay {
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.7); z-index: 1500;
         }
     </style>
 </head>
 
 <body>
 
-    <aside>
+    <div class="mobile-header">
+        <div style="font-weight: bold; color: var(--accent);">ГДЗ UA</div>
+        <button class="burger-btn" onclick="toggleMobileMenu()">МЕНЮ</button>
+    </div>
+
+    <div class="overlay" onclick="toggleMobileMenu()"></div>
+
+    <aside id="sidebar">
         <div class="logo">ГДЗ UA</div>
-        <div class="menu-scroll" id="main-menu">
-        </div>
+        <div class="menu-scroll" id="main-menu"></div>
+        <footer style="margin-top: auto;">
+            <a href="#">Privacy</a> | <a href="#">About</a>
+        </footer>
     </aside>
 
     <main>
         <div class="ad-top">
-            <div style="color: #444;">ADSENSE PLACEHOLDER</div>
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:320px;height:100px"
+                 data-ad-client="ca-pub-2540728945165922"
+                 data-ad-slot="YOUR_SLOT_ID"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
 
         <div class="content-area">
-            <div id="viewer-placeholder" style="text-align: center; margin-top: 100px;">
+            <div id="viewer-placeholder" style="text-align: center; margin-top: 50px;">
                 <h1>Выберите учебник</h1>
-                <p>Используйте меню слева для навигации по базе ГДЗ</p>
+                <p>Навигация через кнопку "МЕНЮ"</p>
             </div>
 
             <div id="book-viewer" style="display: none;">
-                <div class="com-content-article item-page">
-                    <div class="frame-wrapper">
-                        <div id="iframe-container" style="position: relative; padding-top: max(60%,650px); height: 0; width: 100%;">
-                        </div>
-                    </div>
-                    <div class="frame-links" style="margin-top: 15px; font-size: 11px; opacity: 0.4; word-break: break-all;">
-                        <span id="current-url"></span>
+                <div class="frame-wrapper">
+                    <div id="iframe-container" style="position: relative; padding-top: 65vh; height: 0; width: 100%;">
                     </div>
                 </div>
             </div>
         </div>
-
-        <footer>
-            <a href="#">Privacy Policy</a> | <a href="#">About Us</a> | <a href="#">Contact</a>
-        </footer>
     </main>
-
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2540728945165922"
+     crossorigin="anonymous"></script>
     <script>
         const library = [{
             grade: 7,
@@ -235,7 +228,6 @@
             id: "mitchell-english-7-2024",
             user: "kreidaros"
         }];
-
         function initMenu() {
             const menu = $('#main-menu');
             const grades = [...new Set(library.map(item => item.grade))].sort((a, b) => a - b);
@@ -245,8 +237,8 @@
                 <div class="grade-section">
                     <button class="grade-title" onclick="$(this).next().slideToggle(200)">${grade} КЛАСС</button>
                     <div class="type-group">`;
+                
                 const types = [...new Set(library.filter(i => i.grade === grade).map(i => i.type))];
-
                 types.forEach(type => {
                     gradeHtml += `<div class="type-title">${type}</div>`;
                     library.filter(i => i.grade === grade && i.type === type).forEach(book => {
@@ -259,27 +251,32 @@
             });
         }
 
+        function toggleMobileMenu() {
+            $('#sidebar').toggleClass('open');
+            $('.overlay').fadeToggle(200);
+        }
+
         function openBook(id, user) {
+            // Если на мобилке — закрываем меню после выбора
+            if ($(window).width() <= 768) toggleMobileMenu();
+
             $('#viewer-placeholder').hide();
             $('#book-viewer').show();
 
             const url = `https://e.issuu.com/embed.html?d=${id}&pageLayout=singlePage&u=${user}`;
 
             $('#iframe-container').html(`
-            <iframe allow="clipboard-write" 
-                    sandbox="allow-top-navigation allow-top-navigation-by-user-activation allow-downloads allow-scripts allow-same-origin allow-popups" 
-                    allowfullscreen="allowfullscreen" 
-                    style="position: absolute; border: none; width: 100%; height: 100%; left: 0; right: 0; top: 0; bottom: 0;"
-                    src="${url}" 
-                    width="100%" height="100%">
-            </iframe>
-        `);
-            $('#current-url').text(url);
+                <iframe allow="clipboard-write" 
+                        sandbox="allow-top-navigation allow-top-navigation-by-user-activation allow-downloads allow-scripts allow-same-origin allow-popups" 
+                        allowfullscreen="allowfullscreen" 
+                        style="position: absolute; border: none; width: 100%; height: 100%; left: 0; top: 0;"
+                        src="${url}">
+                </iframe>
+            `);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         $(document).ready(initMenu);
     </script>
-
 </body>
-
 </html>
